@@ -1,0 +1,100 @@
+﻿@page "/edit-member/{Id:int}"
+@rendermode InteractiveServer
+
+@using RMGym.Models
+@using RMGym.BLL
+@using Microsoft.AspNetCore.Components.Forms
+
+@inject MemberService MemberService
+@inject NavigationManager Navigation
+
+<h3>Edit Member</h3>
+
+@if (member == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="@member"
+              OnValidSubmit="UpdateMember"
+              FormName="EditMemberForm">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label>Full Name</label>
+            <InputText class="form-control" @bind-Value="member.FullName" />
+        </div>
+
+        <div class="mb-3">
+            <label>Phone Number</label>
+            <InputText class="form-control" @bind-Value="member.PhoneNumber" />
+        </div>
+
+        <div class="mb-3">
+            <label>Email</label>
+            <InputText class="form-control" @bind-Value="member.Email" />
+        </div>
+
+        <div class="mb-3">
+            <label>Address</label>
+            <InputText class="form-control" @bind-Value="member.Address" />
+        </div>
+
+        <div class="mb-3">
+            <label>Emergency Contact No</label>
+            <InputText class="form-control" @bind-Value="member.EmergencyContactNo" />
+        </div>
+
+        <div class="mb-3">
+            <label>Join Date</label>
+            <InputDate class="form-control" @bind-Value="member.JoinDate" />
+        </div>
+
+        <div class="mb-3">
+            <label>Assigned Trainer</label>
+            <InputText class="form-control" @bind-Value="member.AssignedTrainer" />
+        </div>
+
+        <div class="mb-3">
+            <label>Status</label>
+            <InputSelect class="form-control" @bind-Value="member.IsActive">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </InputSelect>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            Update Member
+        </button>
+
+        <a href="/members" class="btn btn-secondary ms-2">
+            Cancel
+        </a>
+
+    </EditForm>
+}
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Member? member;
+
+    protected override async Task OnInitializedAsync()
+    {
+        member = await MemberService.GetMemberById(Id);
+    }
+
+    private async Task UpdateMember()
+    {
+        if (member != null)
+        {
+            await MemberService.UpdateMember(member);
+            Navigation.NavigateTo("/members");
+        }
+    }
+}

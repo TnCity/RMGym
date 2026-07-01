@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using RMGym.BLL;
 using RMGym.Components;
+using RMGym.DAL;
 using RMGym.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddDbContext<GymDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<MemberRepository>();
+builder.Services.AddScoped<MemberService>();
 
 var app = builder.Build();
 

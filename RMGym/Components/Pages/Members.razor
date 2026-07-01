@@ -1,0 +1,80 @@
+﻿@page "/members"
+@rendermode InteractiveServer
+
+@using RMGym.Models
+@using RMGym.BLL
+@using Microsoft.JSInterop
+
+@inject MemberService MemberService
+@inject IJSRuntime JS
+
+<h3>Members</h3>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var member in members)
+        {
+            <tr>
+                <td>@member.MembershipId</td>
+				<td>@member.FullName</td>
+                <td>@member.PhoneNumber</td>
+                <td>@member.Email</td>
+                <td>
+                    @(member.IsActive ? "Active" : "Inactive")
+                </td>
+
+                <td>
+                    <a href="/edit-member/@member.MembershipId"
+                       class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm ms-2"
+                            @onclick="() => DeleteMember(member.MembershipId)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    private List<Member> members = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMembers();
+    }
+
+    private async Task LoadMembers()
+    {
+        members = await MemberService.GetAllMembers();
+    }
+
+    private async Task DeleteMember(int id)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>(
+            "confirm",
+            "Are you sure you want to delete this member?");
+
+        if (confirmed)
+        {
+            await MemberService.DeleteMember(id);
+
+            await LoadMembers();
+        }
+    }
+}
