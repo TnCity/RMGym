@@ -17,6 +17,9 @@ builder.Services.AddDbContext<GymDbContext>(options =>
 builder.Services.AddScoped<MemberRepository>();
 builder.Services.AddScoped<MemberService>();
 
+builder.Services.AddScoped<MembershipPlanRepository>();
+builder.Services.AddScoped<MembershipPlanService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

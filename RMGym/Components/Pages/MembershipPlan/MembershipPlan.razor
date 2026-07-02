@@ -1,0 +1,140 @@
+﻿@page "/membership-plans"
+
+@using RMGym.Models
+@using RMGym.BLL
+
+@inject MembershipPlanService MembershipPlanService
+
+<div class="banner-container">
+    <img src="images/gym-banner.png"
+         class="banner-img"
+         alt="Membership Banner" />
+</div>
+
+<div class="container mt-5">
+
+    <h2 class="text-center fw-bold mb-4">
+        Membership Plans
+    </h2>
+
+    <div class="row">
+
+        @if (membershipPlan.Any())
+        {
+            @foreach (var plan in membershipPlan)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow border-0 h-100">
+
+                        <div class="card-header bg-primary text-white text-center">
+                            <h4>@plan.PlanName</h4>
+                        </div>
+
+                        <div class="card-body">
+                            <h2 class="text-primary">₹@plan.Price</h2>
+
+                            <p>
+                                <strong>Duration:</strong>
+                                @plan.DurationMonths Month(s)
+                            </p>
+
+                            <p>@plan.Description</p>
+
+                            <span class="badge @(plan.IsActive ? "bg-success" : "bg-danger")">
+                                @(plan.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </div>
+
+                        @* <div class="card-footer bg-white border-0">
+
+                            <NavLink href="@($"/edit-membership-plan/{plan.PlanId}")"
+                                     class="btn btn-warning w-100 mb-2">
+                                Edit Plan
+                            </NavLink>
+
+                            <button class="btn btn-primary w-100">
+                                Subscribe Now
+                            </button>
+
+                        </div> *@
+
+                        <div class="card-footer bg-white border-0">
+
+                            <div class="row g-2 mb-2">
+
+                                <div class="col-6">
+                                    <NavLink href="@($"/edit-membership-plan/{plan.PlanId}")"
+                                             class="btn btn-warning w-100">
+                                        Edit Plan
+                                    </NavLink>
+                                </div>
+
+                                <div class="col-6">
+                                    <NavLink href="@($"/delete-membership-plan/{plan.PlanId}")"
+                                             class="btn btn-danger w-100">
+                                        Delete Plan
+                                    </NavLink>
+                                </div>
+
+                            </div>
+
+                            <button class="btn btn-primary w-100">
+                                Subscribe Now
+                            </button>
+
+                        </div>
+
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    No Membership Plans Found.
+                </div>
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<style>
+    .banner-container {
+        width: 100%;
+        margin-bottom: 40px;
+    }
+
+    .banner-img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 10px;
+    }
+
+    .card {
+        border-radius: 15px;
+        transition: all .3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-8px);
+        }
+
+    .card-header h4 {
+        margin-bottom: 0;
+    }
+</style>
+
+@code {
+
+    private List<RMGym.Models.MembershipPlan> membershipPlan = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        membershipPlan = await MembershipPlanService.GetAllMembershipPlans();
+    }
+
+}

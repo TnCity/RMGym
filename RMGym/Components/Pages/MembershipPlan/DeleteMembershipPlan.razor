@@ -1,0 +1,98 @@
+﻿@page "/delete-membership-plan/{Id:int}"
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Components
+@using RMGym.BLL
+
+@inject MembershipPlanService MembershipPlanService
+@inject NavigationManager Navigation
+
+<h3>Delete Membership Plan</h3>
+
+@if (plan == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="card shadow border-danger">
+
+        <div class="card-header bg-danger text-white">
+            <h4>Delete Confirmation</h4>
+        </div>
+
+        <div class="card-body">
+
+            <p class="text-danger fw-bold">
+                Are you sure you want to delete this Membership Plan?
+            </p>
+
+            <hr />
+
+            <p>
+                <strong>Plan Name:</strong>
+                @plan.PlanName
+            </p>
+
+            <p>
+                <strong>Description:</strong>
+                @plan.Description
+            </p>
+
+            <p>
+                <strong>Duration:</strong>
+                @plan.DurationMonths Month(s)
+            </p>
+
+            <p>
+                <strong>Price:</strong>
+                ₹@plan.Price
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+
+                <span class="badge @(plan.IsActive ? "bg-success" : "bg-danger")">
+                    @(plan.IsActive ? "Active" : "Inactive")
+                </span>
+            </p>
+
+        </div>
+
+        <div class="card-footer">
+
+            <button class="btn btn-danger"
+                    @onclick="DeletePlan">
+                Delete
+            </button>
+
+            <a href="/membership-plans"
+               class="btn btn-secondary ms-2">
+                Cancel
+            </a>
+
+        </div>
+
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private RMGym.Models.MembershipPlan? plan;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        plan = await MembershipPlanService.GetMembershipPlanById(Id);
+    }
+
+    private async Task DeletePlan()
+    {
+        await MembershipPlanService.DeleteMembershipPlan(Id);
+
+        Navigation.NavigateTo("/membership-plans");
+    }
+
+}

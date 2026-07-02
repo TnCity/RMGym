@@ -9,6 +9,7 @@ namespace RMGym.Data
         {
         }
         public DbSet<Member> Members { get; set; }
+        public DbSet<MembershipPlan> MembershipPlans { get; set; }
 
     }
 }
