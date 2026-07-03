@@ -20,6 +20,9 @@ builder.Services.AddScoped<MemberService>();
 builder.Services.AddScoped<MembershipPlanRepository>();
 builder.Services.AddScoped<MembershipPlanService>();
 
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<UserService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
