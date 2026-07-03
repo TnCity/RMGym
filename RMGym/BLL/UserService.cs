@@ -33,5 +33,14 @@ namespace RMGym.BLL
         {
             return await _repository.GetUserById(id);
         }
+        public async Task UpdateUser(User user)
+        {
+            await _repository.UpdateUser(user);
+        }
+
+        public async Task ChangePassword(int userId, string newPassword)
+        {
+            await _repository.ChangePassword(userId, newPassword);
+        }
     }
 }

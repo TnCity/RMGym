@@ -14,6 +14,7 @@ builder.Services.AddDbContext<GymDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
 builder.Services.AddScoped<MemberRepository>();
 builder.Services.AddScoped<MemberService>();
 
@@ -23,6 +24,8 @@ builder.Services.AddScoped<MembershipPlanService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<AuthService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

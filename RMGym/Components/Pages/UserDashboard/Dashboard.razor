@@ -1,0 +1,192 @@
+﻿@page "/user-dashboard"
+@using RMGym.BLL
+
+@inject NavigationManager Navigation
+@inject AuthService AuthService
+
+<div class="dashboard-bg">
+    <div class="container py-5">
+
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="welcome-card">
+                    <h2>Welcome, @UserName 💪</h2>
+                    <p>Your fitness journey starts here. Stay consistent and achieve your goals.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="row g-4 mb-5">
+
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Membership</h5>
+                    <h3>Active</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Plan</h5>
+                    <h3>Premium</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Trainer</h5>
+                    <h3>Assigned</h3>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <h5>Progress</h5>
+                    <h3>75%</h3>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="action-card">
+                    <h4>Membership Plans</h4>
+                    <p>View and upgrade your gym membership.</p>
+
+                    <button class="btn btn-primary"
+                            @onclick="GoToPlans">
+                        View Plans
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="action-card">
+                    <h4>My Profile</h4>
+                    <p>Manage your personal information.</p>
+
+                    <button class="btn btn-success"
+                            @onclick="GoToProfile">
+                        View Profile
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="action-card">
+                    <h4>Logout</h4>
+                    <p>Securely sign out from your account.</p>
+
+                    <button class="btn btn-danger"
+                            @onclick="Logout">
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<style>
+
+    .dashboard-bg {
+        min-height: 100vh;
+        background: #f5f7fb;
+        padding-top: 20px;
+    }
+
+    .welcome-card {
+        background: linear-gradient(135deg,#1e3a8a,#7c3aed);
+        color: white;
+        padding: 35px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,.15);
+    }
+
+        .welcome-card h2 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+    .dashboard-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,.08);
+        transition: 0.3s;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dashboard-card h5 {
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-card h3 {
+            color: #1e3a8a;
+            font-weight: bold;
+        }
+
+    .action-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,.08);
+        height: 100%;
+    }
+
+        .action-card h4 {
+            margin-bottom: 15px;
+            color: #1e3a8a;
+        }
+
+        .action-card p {
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+</style>
+
+@code {
+
+    private string UserName = "";
+
+    protected override void OnInitialized()
+    {
+        if (!AuthService.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        UserName = AuthService.CurrentUser?.FullName ?? "RM Gym Member";
+    }
+
+    private void GoToPlans()
+    {
+        Navigation.NavigateTo("/membership-plans");
+    }
+
+    private void GoToProfile()
+    {
+        Navigation.NavigateTo("/profile");
+    }
+
+    private void Logout()
+    {
+        AuthService.Logout();
+
+        Navigation.NavigateTo("/user-login", true);
+    }
+}

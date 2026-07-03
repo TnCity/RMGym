@@ -5,6 +5,7 @@
 
 @inject UserService UserService
 @inject NavigationManager Navigation
+@inject AuthService AuthService
 
 <div class="login-wrapper">
     <div class="container">
@@ -60,7 +61,7 @@
                         <span class="text-light">
                             Don't have an account?
                         </span>
-                        <a href="/register" class="register-link">
+                        <a href="/user-register" class="register-link">
                             Register
                         </a>
                     </div>
@@ -132,6 +133,8 @@
     private string message = string.Empty;
 
     private async Task LoginUser()
+{
+    try
     {
         var user = await UserService.ValidateUser(
             loginModel.Email,
@@ -139,16 +142,23 @@
 
         if (user == null)
         {
-            message = "Invalid email or password.";
+            message = "Invalid Email or Password.";
             return;
         }
 
-        message = "Login Successful!";
+        AuthService.Login(user);
+
+        message = $"Welcome {user.FullName}!";
 
         await Task.Delay(1000);
 
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo("/user-dashboard");
     }
+    catch (Exception ex)
+    {
+        message = ex.Message;
+    }
+}
 
     public class LoginModel
     {

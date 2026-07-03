@@ -52,6 +52,34 @@ namespace RMGym.BLL
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.UserId == id);
         }
+
+        public async Task UpdateUser(User user)
+        {
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserId == user.UserId);
+
+            if (existingUser == null)
+            {
+                throw new Exception(
+                    $"User not found. UserId = {user.UserId}");
+            }
+
+            existingUser.FullName = user.FullName;
+            existingUser.Email = user.Email;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ChangePassword(int userId, string newPassword)
+        {
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user != null)
+            {
+                user.Password = newPassword;
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 
     
