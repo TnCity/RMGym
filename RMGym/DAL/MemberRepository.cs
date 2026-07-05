@@ -27,8 +27,15 @@ namespace RMGym.DAL
             return await _context.Members
                 .FirstOrDefaultAsync(m => m.MembershipId == id);
         }
+        public async Task<Member?> GetMemberByEmail(string email)
+        {
+            return await _context.Members
+                .Where(x => x.Email == email)
+                .OrderByDescending(x => x.MembershipId)
+                .FirstOrDefaultAsync();
+        }
 
-       // Add Member
+        // Add Member
         public async Task AddMember(Member member)
         {
             _context.Members.Add(member);

@@ -22,6 +22,11 @@ namespace RMGym.BLL
             return await _repository.GetMemberById(id);
         }
 
+        public async Task<Member?> GetMemberByEmail(string email)
+        {
+            return await _repository.GetMemberByEmail(email);
+        }
+
         public async Task AddMember(Member member)
         {
             await _repository.AddMember(member);

@@ -1,0 +1,136 @@
+﻿@page "/buy-membership/{PlanId:int}"
+
+@using RMGym.Models
+@using RMGym.BLL
+
+@inject MembershipPlanService MembershipPlanService
+@inject AuthService AuthService
+@inject MemberService MemberService
+@inject MembershipSubscriptionService MembershipSubscriptionService
+@inject NavigationManager Navigation
+
+<div class="container mt-5">
+
+    @if (plan != null)
+    {
+        <div class="card shadow-lg border-0">
+
+            <div class="card-header bg-primary text-white">
+                <h3>@plan.PlanName</h3>
+            </div>
+
+            <div class="card-body">
+
+                <p>
+                    <strong>Description:</strong><br />
+                    @plan.Description
+                </p>
+
+                <p>
+                    <strong>Duration:</strong>
+                    @plan.DurationMonths Month(s)
+                </p>
+
+                <p>
+                    <strong>Price:</strong>
+                    ₹@plan.Price
+                </p>
+
+                <button class="btn btn-success"
+                        @onclick="ConfirmPurchase">
+                    Confirm Purchase
+                </button>
+
+                @if (!string.IsNullOrEmpty(message))
+                {
+                    <div class="alert alert-info mt-3">@message</div>
+                }
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Membership Plan Not Found.
+        </div>
+    }
+
+</div>
+
+@code {
+
+    [Parameter]
+    public int PlanId { get; set; }
+
+    private RMGym.Models.MembershipPlan? plan;
+
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        plan = await MembershipPlanService.GetMembershipPlanById(PlanId);
+    }
+    private async Task ConfirmPurchase()
+    {
+        try
+        {
+            message = "Button Clicked";
+
+            if (AuthService.CurrentUser == null || plan == null)
+            {
+                message = "User or Plan is null";
+                return;
+            }
+
+            var member = new Member
+            {
+                FullName = AuthService.CurrentUser.FullName,
+                Email = AuthService.CurrentUser.Email,
+                PhoneNumber = "0000000000",
+                Address = "",
+                EmergencyContactNo = "",
+                AssignedTrainer = "",
+                JoinDate = DateTime.Now,
+                IsActive = true
+            };
+
+            await MemberService.AddMember(member);
+
+            message = $"Member Created. ID = {member.MembershipId}";
+
+            int months = 1;
+
+            if (!string.IsNullOrEmpty(plan.DurationMonths))
+            {
+                var numberPart = new string(
+                    plan.DurationMonths
+                        .TakeWhile(char.IsDigit)
+                        .ToArray());
+
+                int.TryParse(numberPart, out months);
+            }
+
+            var subscription = new MembershipSubscription
+            {
+                MemberId = member.MembershipId,
+                PlanId = plan.PlanId,
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddMonths(months),
+                AmountPaid = plan.Price,
+                IsActive = true
+            };
+
+            await MembershipSubscriptionService.AddSubscription(subscription);
+
+            message = "Subscription Created Successfully";
+
+            Navigation.NavigateTo("/user-dashboard");
+        }
+        catch (Exception ex)
+        {
+            message = ex.Message;
+        }
+    }
+}

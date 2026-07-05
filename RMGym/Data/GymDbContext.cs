@@ -11,6 +11,8 @@ namespace RMGym.Data
         public DbSet<Member> Members { get; set; }
         public DbSet<MembershipPlan> MembershipPlans { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<MembershipSubscription> MembershipSubscriptions { get; set; }
+
 
     }
 }

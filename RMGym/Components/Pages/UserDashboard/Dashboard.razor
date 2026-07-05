@@ -1,8 +1,13 @@
 ﻿@page "/user-dashboard"
+
 @using RMGym.BLL
+@using RMGym.Models
 
 @inject NavigationManager Navigation
 @inject AuthService AuthService
+@inject MemberService MemberService
+@inject MembershipSubscriptionService MembershipSubscriptionService
+@inject MembershipPlanService MembershipPlanService
 
 <div class="dashboard-bg">
     <div class="container py-5">
@@ -22,32 +27,94 @@
 
             <div class="col-md-3">
                 <div class="dashboard-card">
-                    <h5>Membership</h5>
-                    <h3>Active</h3>
+                    <h5>Membership Status</h5>
+                    <h3 class="text-success">@MembershipStatus</h3>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="dashboard-card">
-                    <h5>Plan</h5>
-                    <h3>Premium</h3>
+                    <h5>Current Plan</h5>
+                    <h3>@CurrentPlan</h3>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="dashboard-card">
-                    <h5>Trainer</h5>
-                    <h3>Assigned</h3>
+                    <h5>Expiry Date</h5>
+                    <h3>@ExpiryDate</h3>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="dashboard-card">
-                    <h5>Progress</h5>
-                    <h3>75%</h3>
+                    <h5>Days Left</h5>
+                    <h3>@DaysLeft</h3>
                 </div>
             </div>
 
+        </div>
+
+        <!-- My Membership -->
+        <div class="row mb-5">
+            <div class="col-12">
+
+                <div class="action-card">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="mb-0">My Membership</h3>
+
+                        <span class="badge bg-success fs-6">
+                            @MembershipStatus
+                        </span>
+                    </div>
+
+                    <p>
+                        Membership information for your RM Gym account.
+                    </p>
+
+                    <div class="row g-3 mt-2">
+
+                        <div class="col-md-3">
+                            <div class="border rounded p-3 text-center">
+                                <h6>Plan</h6>
+                                <strong>@CurrentPlan</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="border rounded p-3 text-center">
+                                <h6>Start Date</h6>
+                                <strong>@StartDate</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="border rounded p-3 text-center">
+                                <h6>Expiry Date</h6>
+                                <strong>@ExpiryDate</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="border rounded p-3 text-center">
+                                <h6>Amount Paid</h6>
+                                <strong>@AmountPaid</strong>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4">
+                        <button class="btn btn-primary"
+                                @onclick="GoToPlans">
+                            Browse Membership Plans
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
 
         <!-- Quick Actions -->
@@ -162,15 +229,56 @@
 
     private string UserName = "";
 
-    protected override void OnInitialized()
+    private string MembershipStatus = "Not Subscribed";
+    private string CurrentPlan = "---";
+    private string ExpiryDate = "---";
+    private string DaysLeft = "---";
+    private string AmountPaid = "---";
+    private string StartDate = "---";
+
+    protected override async Task OnInitializedAsync()
     {
         if (!AuthService.IsLoggedIn)
         {
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo("/user-login");
             return;
         }
 
         UserName = AuthService.CurrentUser?.FullName ?? "RM Gym Member";
+
+        var member = await MemberService.GetMemberByEmail(
+            AuthService.CurrentUser!.Email);
+
+        if (member != null)
+        {
+            var subscription = await MembershipSubscriptionService
+                .GetLatestSubscription(member.MembershipId);
+
+            if (subscription != null)
+            {
+                MembershipStatus = subscription.IsActive
+                    ? "Active"
+                    : "Inactive";
+
+                var plan = await MembershipPlanService
+                    .GetMembershipPlanById(subscription.PlanId);
+
+                CurrentPlan = plan?.PlanName ?? "---";
+
+                StartDate =
+                    subscription.StartDate.ToString("dd-MMM-yyyy");
+
+                ExpiryDate =
+                    subscription.EndDate.ToString("dd-MMM-yyyy");
+
+                AmountPaid =
+                    $"₹{subscription.AmountPaid}";
+
+                DaysLeft =
+                    (subscription.EndDate.Date - DateTime.Today)
+                    .Days.ToString();
+            }
+        }
     }
 
     private void GoToPlans()
@@ -180,13 +288,12 @@
 
     private void GoToProfile()
     {
-        Navigation.NavigateTo("/profile");
+        Navigation.NavigateTo("/user-profile");
     }
 
     private void Logout()
     {
         AuthService.Logout();
-
         Navigation.NavigateTo("/user-login", true);
     }
 }

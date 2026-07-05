@@ -1,0 +1,67 @@
+﻿@page "/add-subscription"
+
+@using RMGym.Models
+@using RMGym.BLL
+
+@inject MemberService MemberService
+@inject MembershipPlanService MembershipPlanService
+
+<h3>Add Subscription</h3>
+
+<EditForm Model="subscription">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Member</label>
+
+        <InputSelect class="form-control"
+                     @bind-Value="subscription.MemberId">
+
+            <option value="0">Select Member</option>
+
+            @foreach (var member in members)
+            {
+                <option value="@member.MembershipId">
+                    @member.FullName
+                </option>
+            }
+
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label>Membership Plan</label>
+
+        <InputSelect class="form-control"
+                     @bind-Value="subscription.PlanId">
+
+            <option value="0">Select Plan</option>
+
+            @foreach (var plan in plans)
+            {
+                <option value="@plan.PlanId">
+                    @plan.PlanName
+                </option>
+            }
+
+        </InputSelect>
+    </div>
+
+</EditForm>
+
+@code {
+
+    private MembershipSubscription subscription = new();
+
+    private List<Member> members = new();
+
+    private List<MembershipPlan> plans = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        members = await MemberService.GetAllMembers();
+
+        plans = await MembershipPlanService.GetAllMembershipPlans();
+    }
+}

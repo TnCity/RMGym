@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RMGym.Data;
 
@@ -11,9 +12,11 @@ using RMGym.Data;
 namespace RMGym.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    partial class GymDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260705131109_AddMembershipSubscription")]
+    partial class AddMembershipSubscription
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,7 +64,7 @@ namespace RMGym.Migrations
 
                     b.HasKey("MembershipId");
 
-                    b.ToTable("Members", (string)null);
+                    b.ToTable("Members");
                 });
 
             modelBuilder.Entity("RMGym.Models.MembershipPlan", b =>
@@ -92,7 +95,7 @@ namespace RMGym.Migrations
 
                     b.HasKey("PlanId");
 
-                    b.ToTable("MembershipPlans", (string)null);
+                    b.ToTable("MembershipPlans");
                 });
 
             modelBuilder.Entity("RMGym.Models.MembershipSubscription", b =>
@@ -130,7 +133,7 @@ namespace RMGym.Migrations
 
                     b.HasIndex("MembershipPlanPlanId");
 
-                    b.ToTable("MembershipSubscriptions", (string)null);
+                    b.ToTable("MembershipSubscriptions");
                 });
 
             modelBuilder.Entity("RMGym.Models.User", b =>
@@ -162,7 +165,7 @@ namespace RMGym.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("RMGym.Models.MembershipSubscription", b =>
