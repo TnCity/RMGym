@@ -34,6 +34,12 @@ namespace RMGym.DAL
                 .OrderByDescending(x => x.MembershipId)
                 .FirstOrDefaultAsync();
         }
+        // Get Member By UserId
+        public async Task<Member?> GetMemberByUserId(int userId)
+        {
+            return await _context.Members
+                .FirstOrDefaultAsync(m => m.UserId == userId);
+        }
 
         // Add Member
         public async Task AddMember(Member member)

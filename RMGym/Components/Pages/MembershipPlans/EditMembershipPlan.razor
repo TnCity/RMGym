@@ -1,9 +1,9 @@
 ﻿@page "/edit-membership-plan/{Id:int}"
-@rendermode InteractiveServer
+
 @using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
 @using RMGym.Models
 @using RMGym.BLL
-@using Microsoft.AspNetCore.Components.Forms
 
 @inject MembershipPlanService MembershipPlanService
 @inject NavigationManager Navigation
@@ -17,8 +17,7 @@
 else
 {
     <EditForm Model="@plan"
-              OnValidSubmit="UpdatePlan"
-              FormName="EditMembershipPlanForm">
+              OnValidSubmit="UpdatePlan">
 
         <DataAnnotationsValidator />
         <ValidationSummary />
@@ -52,6 +51,7 @@ else
             <label class="form-label">Status</label>
 
             <InputSelect class="form-control"
+                         TValue="bool"
                          @bind-Value="plan.IsActive">
 
                 <option value="true">Active</option>
@@ -60,8 +60,7 @@ else
             </InputSelect>
         </div>
 
-        <button type="submit"
-                class="btn btn-primary">
+        <button type="submit" class="btn btn-primary">
             Update Plan
         </button>
 
@@ -78,7 +77,7 @@ else
     [Parameter]
     public int Id { get; set; }
 
-    private RMGym.Models.MembershipPlan? plan;
+    private MembershipPlan? plan;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -94,4 +93,5 @@ else
             Navigation.NavigateTo("/membership-plans");
         }
     }
+
 }

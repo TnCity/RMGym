@@ -1,16 +1,17 @@
-﻿@page "/add-membership-plan"
+﻿@page "/membership-plans/add"
 @rendermode InteractiveServer
 
+@using RMGym.Models
 @using RMGym.BLL
 @using Microsoft.AspNetCore.Components.Forms
 
 @inject MembershipPlanService MembershipPlanService
-@inject NavigationManager Navigation
+@inject NavigationManager NavigationManager
 
 <h3>Add Membership Plan</h3>
 
 <EditForm Model="@plan"
-          OnValidSubmit="SavePlan"
+          OnValidSubmit="HandleValidSubmit"
           FormName="AddMembershipPlanForm">
 
     <DataAnnotationsValidator />
@@ -33,42 +34,58 @@
         <label class="form-label">Duration (Months)</label>
         <InputText class="form-control"
                    @bind-Value="plan.DurationMonths" />
+        <ValidationMessage For="@(() => plan.DurationMonths)" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Price</label>
+        <label class="form-label">Price (₹)</label>
         <InputNumber class="form-control"
                      @bind-Value="plan.Price" />
+        <ValidationMessage For="@(() => plan.Price)" />
     </div>
 
     <div class="mb-3">
         <label class="form-label">Status</label>
+
         <InputSelect class="form-control"
                      @bind-Value="plan.IsActive">
+
             <option value="true">Active</option>
             <option value="false">Inactive</option>
+
         </InputSelect>
     </div>
 
-    <button type="submit" class="btn btn-success">
-        Save Plan
-    </button>
+    <div class="mt-3">
 
-    <a href="/membership-plans"
-       class="btn btn-secondary ms-2">
-        Cancel
-    </a>
+        <button type="submit"
+                class="btn btn-success">
+            Save
+        </button>
+
+        <button type="button"
+                class="btn btn-secondary ms-2"
+                @onclick="Cancel">
+            Cancel
+        </button>
+
+    </div>
 
 </EditForm>
 
-@code {
+@code
+{
+    private MembershipPlan plan = new();
 
-    private RMGym.Models.MembershipPlan plan = new();
-
-    private async Task SavePlan()
+    private async Task HandleValidSubmit()
     {
-        MembershipPlanService.AddMembershipPlan(plan); 
-        Navigation.NavigateTo("/membership-plans");
+        await MembershipPlanService.AddMembershipPlan(plan);
+
+        NavigationManager.NavigateTo("/membership-plans");
     }
 
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/membership-plans");
+    }
 }

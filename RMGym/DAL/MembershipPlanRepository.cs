@@ -13,6 +13,7 @@ namespace RMGym.DAL
             _context = context;
         }
 
+
         // Get All Plans
         public async Task<List<MembershipPlan>> GetAllMembershipPlans()
         {

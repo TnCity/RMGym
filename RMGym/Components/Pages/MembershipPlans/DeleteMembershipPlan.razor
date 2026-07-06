@@ -41,7 +41,7 @@ else
 
             <p>
                 <strong>Duration:</strong>
-                @plan.DurationMonths Month(s)
+                @((int.TryParse(plan.DurationMonths, out var d)) ? $"{d} Month(s)" : plan.DurationMonths)
             </p>
 
             <p>
